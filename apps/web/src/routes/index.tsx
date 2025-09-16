@@ -6,11 +6,9 @@ import { Hammer, User } from "lucide-react";
 export const Route = createFileRoute("/")({
    component: RouteComponent,
 });
-import { MoveRight, PenTool } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 function RouteComponent() {
-   const navigate = useNavigate();
    return (
       <div className="w-full min-h-dvh flex ">
          <div className="container mx-auto px-4 sm:px-6">
@@ -53,7 +51,7 @@ function SignInComponent() {
          )}
          disabled={isPending}
       >
-         <Link to={session ? "/dashboard" : "/login"} className="flex items-center gap-2">
+         <Link to={session ? "/dashboard" : "/sign-in"} className="flex items-center gap-2">
             <User className="w-4 h-4" />
             <span>{session ? "Dashboard" : "Sign In"}</span>
          </Link>
