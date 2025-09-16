@@ -3,6 +3,9 @@ import { LayoutDashboardIcon } from "lucide-react";
 import { BsFillJournalBookmarkFill, BsGift } from "react-icons/bs";
 import { CiDumbbell } from "react-icons/ci";
 import DashboardOverview from "./dashboard-overview";
+import JournalOverview from "./journal-overview";
+import WorkoutOverview from "./workout-overview";
+import HabitOverview from "./habit-overview";
 
 interface Tab {
    name: string;
@@ -28,14 +31,14 @@ function DashboardTabs({ activeTab, setActiveTab }: Props) {
          name: "Journal",
          value: "journal",
          icon: BsFillJournalBookmarkFill,
-         content: <div>Journal</div>,
+         content: <JournalOverview />,
       },
-      { name: "Workouts", value: "workouts", icon: CiDumbbell, content: <div>Workouts</div> },
-      { name: "Habits", value: "habits", icon: BsGift, content: <div>Habits</div> },
+      { name: "Workouts", value: "workouts", icon: CiDumbbell, content: <WorkoutOverview /> },
+      { name: "Habits", value: "habits", icon: BsGift, content: <HabitOverview /> },
    ];
 
    return (
-      <div className="w-full">
+      <div className="w-full mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 space-y-6">
          <Tabs
             value={activeTab}
             onValueChange={setActiveTab}

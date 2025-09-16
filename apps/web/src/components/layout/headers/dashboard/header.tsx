@@ -36,7 +36,7 @@ export const Header = ({ setActiveTab, activeTab }: HeaderProps) => {
    ];
 
    return (
-      <div className="flex flex-col w-full px-1.5 border-b">
+      <div className="flex flex-col w-full ">
          <div className="w-full flex justify-between py-1 items-center border-b h-10">
             <div className="flex items-center gap-2">
                {" "}
