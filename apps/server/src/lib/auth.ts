@@ -4,25 +4,32 @@ import { expo } from "@better-auth/expo";
 import { db } from "../db";
 import * as schema from "../db/schema/auth";
 import { env } from "cloudflare:workers";
+import { uuidv7 } from "uuidv7";
 
 export const auth = betterAuth<BetterAuthOptions>({
-	database: drizzleAdapter(db, {
-		provider: "pg",
+  database: drizzleAdapter(db, {
+    provider: "pg",
 
-		schema: schema,
-	}),
-	trustedOrigins: [env.CORS_ORIGIN, "mybettertapp://", "exp://"],
-	emailAndPassword: {
-		enabled: true,
-	},
-	secret: env.BETTER_AUTH_SECRET,
-	baseURL: env.BETTER_AUTH_URL,
-	advanced: {
-		defaultCookieAttributes: {
-			sameSite: "none",
-			secure: true,
-			httpOnly: true,
-		},
-	},
-	plugins: [expo()],
+    schema: schema,
+  }),
+  trustedOrigins: [env.CORS_ORIGIN, "mybettertapp://", "exp://"],
+  emailAndPassword: {
+    enabled: true,
+    autoSignIn: true,
+    requireEmailVerification: false,
+  },
+  secret: env.BETTER_AUTH_SECRET,
+  baseURL: env.BETTER_AUTH_URL,
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+      httpOnly: true,
+    },
+
+    database: {
+      generateId: () => uuidv7(),
+    },
+  },
+  plugins: [expo()],
 });
