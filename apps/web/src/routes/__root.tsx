@@ -18,6 +18,7 @@ import Loader from "@/components/loader";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type { AppRouter } from "../../../server/src/routers";
 import type { QueryClient } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 export interface RouterAppContext {
    trpc: TRPCOptionsProxy<AppRouter>;
    queryClient: QueryClient;
@@ -50,12 +51,19 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
    return (
-      <html lang="en" className="dark">
+      <html lang="en" className="dark" suppressHydrationWarning>
          <head>
             <HeadContent />
          </head>
          <body>
-            <Outlet />
+            <ThemeProvider
+               attribute="class"
+               defaultTheme="system"
+               enableSystem
+               disableTransitionOnChange
+            >
+               <Outlet />
+            </ThemeProvider>
             <Toaster richColors />
             <TanStackRouterDevtools position="bottom-left" />
             <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
