@@ -1,4 +1,5 @@
-import { createRouter as createTanStackRouter } from "@tanstack/react-router";
+import { createRouter as createTanStackRouter, Navigate } from "@tanstack/react-router";
+import { MdNearbyError } from "react-icons/md";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
@@ -8,6 +9,10 @@ import { routeTree } from "./routeTree.gen";
 import { TRPCProvider } from "./utils/trpc";
 import { StrictMode } from "react";
 import { getServerHeaders } from "./lib/server-headers";
+import MainLayout from "./components/layout/main-layout";
+import { MdError } from "react-icons/md";
+import { authClient } from "./lib/auth-client";
+import Loader from "./components/loader";
 
 function makeQueryClient() {
    return new QueryClient({
@@ -61,7 +66,7 @@ export const createRouter = () => {
       defaultPreloadStaleTime: 0,
       defaultPreload: "intent",
       context: { trpc, queryClient },
-      defaultNotFoundComponent: () => <div>Not Found</div>,
+      defaultNotFoundComponent: () => <DefaultNotFoundScreen />,
       Wrap: ({ children }) => (
          <StrictMode>
             <QueryClientProvider client={queryClient}>
@@ -74,6 +79,28 @@ export const createRouter = () => {
    });
    return router;
 };
+function DefaultNotFoundScreen() {
+   const { data: session, isPending } = authClient.useSession();
+   if (isPending) {
+      return <Loader />;
+   }
+
+   if (!session?.user) {
+      return <Navigate to="/sign-in" />;
+   }
+
+   return (
+      <MainLayout>
+         <div className="mx-auto w-full flex items-center justify-center min-h-dvh flex-col gap-2">
+            <MdNearbyError className="text-9xl text-muted-foreground" />
+            <span className="font-semibold">Not Found</span>
+            <span className="text-muted-foreground">
+               We could not find the page you were looking for
+            </span>
+         </div>
+      </MainLayout>
+   );
+}
 
 declare module "@tanstack/react-router" {
    interface Register {

@@ -1,14 +1,9 @@
 import { protectedProcedure, publicProcedure, router } from "../lib/trpc";
+import { notesRouter } from "./note";
+import { testRouter } from "./test";
 
 export const appRouter = router({
-	healthCheck: publicProcedure.query(() => {
-		return "OK";
-	}),
-	privateData: protectedProcedure.query(({ ctx }) => {
-		return {
-			message: "This is private",
-			user: ctx.session.user,
-		};
-	}),
+   testRouter: testRouter,
+   noteRouter: notesRouter,
 });
 export type AppRouter = typeof appRouter;

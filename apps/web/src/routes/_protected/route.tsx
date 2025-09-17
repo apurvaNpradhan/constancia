@@ -1,11 +1,16 @@
+import MainLayout from "@/components/layout/main-layout";
 import Loader from "@/components/loader";
 import { authClient } from "@/lib/auth-client";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_protected")({
    component: RouteComponent,
+   notFoundComponent: NotFoundComponent,
 });
 
+function NotFoundComponent() {
+   return <MainLayout>Noasdadst Found</MainLayout>;
+}
 function RouteComponent() {
    const { data: session, isPending } = authClient.useSession();
 

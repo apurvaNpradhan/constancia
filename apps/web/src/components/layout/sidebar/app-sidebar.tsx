@@ -15,8 +15,12 @@ import {
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-
-// This is sample data.
+import { MdDashboard, MdSettings } from "react-icons/md";
+import { IoDocumentsOutline } from "react-icons/io5";
+import { MdCalendarToday } from "react-icons/md";
+import { FaDumbbell } from "react-icons/fa";
+import { PiPlantFill } from "react-icons/pi";
+import { MdOutlineSearch } from "react-icons/md";
 const data = {
    teams: [
       {
@@ -39,24 +43,38 @@ const data = {
       {
          title: "Search",
          url: "#",
-         icon: Search,
+         icon: MdOutlineSearch,
       },
       {
-         title: "Ask AI",
-         url: "#",
-         icon: Sparkles,
-      },
-      {
-         title: "Home",
-         url: "#",
-         icon: Home,
+         title: "Dashobard",
+         url: "/dashboard",
+         icon: MdDashboard,
          isActive: true,
       },
       {
-         title: "Inbox",
+         title: "All notes",
+         url: "/all",
+         icon: IoDocumentsOutline,
+      },
+      {
+         title: "Journals",
+         url: "/journals",
+         icon: MdCalendarToday,
+      },
+      {
+         title: "Workouts",
+         url: "/workouts",
+         icon: FaDumbbell,
+      },
+      {
+         title: "Habits",
+         url: "/habits",
+         icon: PiPlantFill,
+      },
+      {
+         title: "Settings",
          url: "#",
-         icon: Inbox,
-         badge: "10",
+         icon: MdSettings,
       },
    ],
    navSecondary: [
