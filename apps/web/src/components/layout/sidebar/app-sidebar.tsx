@@ -53,7 +53,7 @@ const data = {
       },
       {
          title: "All notes",
-         url: "/all",
+         url: "/notes/all",
          icon: IoDocumentsOutline,
       },
       {

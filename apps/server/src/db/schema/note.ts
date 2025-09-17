@@ -3,12 +3,14 @@ import {
    createSchemaFactory,
    createSelectSchema,
    createUpdateSchema,
+   type CreateSelectSchema,
    type Json,
 } from "drizzle-zod";
 import {
    boolean,
    index,
    jsonb,
+   pgEnum,
    pgTable,
    text,
    timestamp,
@@ -22,6 +24,7 @@ import { user } from "./auth";
 import { relations, sql } from "drizzle-orm";
 import type z from "zod";
 
+export const typeEnum = pgEnum("type_enum", ["note", "journal", "workout", "habit"]);
 export const note = pgTable(
    "note",
    {
@@ -31,6 +34,7 @@ export const note = pgTable(
          .references(() => user.id, { onDelete: "cascade" }),
       title: varchar("title", { length: 255 }),
       content: jsonb("content").$type<Json>(),
+      type: typeEnum("type").notNull().default("note"),
       isFavorite: boolean("is_favorite").notNull().default(false),
       isTrashed: boolean("is_trashed").notNull().default(false),
       parentId: uuid("parent_id").references((): AnyPgColumn => note.id),
@@ -39,9 +43,9 @@ export const note = pgTable(
       })
          .defaultNow()
          .notNull(),
-      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true })
-         .$onUpdateFn(() => sql`now()`)
-         .notNull(),
+      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }).$onUpdateFn(
+         () => sql`now()`
+      ),
    },
    (table) => [
       {
@@ -68,9 +72,9 @@ export const links = pgTable(
       context: text("context"),
       isAutomatic: boolean("is_automatic").default(false),
       createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
-      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true })
-         .$onUpdateFn(() => sql`now()`)
-         .notNull(),
+      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }).$onUpdateFn(
+         () => sql`now()`
+      ),
    },
    (table) => [
       {
@@ -95,7 +99,7 @@ export const noteMetadata = pgTable(
       value: jsonb("value").$type<any>(),
       dataType: varchar("data_type", { length: 20 }).notNull().default("string"),
       createdAt: timestamp("created_at").notNull().defaultNow().notNull(),
-      updatedAt: timestamp("updated_at").notNull().defaultNow().notNull(),
+      updatedAt: timestamp("updated_at").notNull().defaultNow(),
    },
    (table) => [
       {
@@ -139,9 +143,14 @@ export const noteMetadataRelations = relations(noteMetadata, ({ one }) => ({
       references: [note.id],
    }),
 }));
-
+export const NoteType = createSelectSchema(typeEnum);
+export type NoteTypeSchema = z.infer<typeof NoteType>;
 export const NoteSchema = createSelectSchema(note);
-export const NoteInsertSchema = createInsertSchema(note);
+export const NoteInsertSchema = createInsertSchema(note).omit({
+   createdAt: true,
+   updatedAt: true,
+   userId: true,
+});
 export const NoteUpdateSchema = createUpdateSchema(note);
 
 export type NoteSchema = z.infer<typeof NoteSchema>;

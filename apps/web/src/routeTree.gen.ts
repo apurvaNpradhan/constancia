@@ -13,9 +13,11 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
-import { Route as ProtectedAllIndexRouteImport } from './routes/_protected/all/index'
+import { Route as ProtectedJournalsIndexRouteImport } from './routes/_protected/journals/index'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/sign-up/index'
 import { Route as AuthSignInIndexRouteImport } from './routes/_auth/sign-in/index'
+import { Route as ProtectedNotesIdRouteImport } from './routes/_protected/notes/$id'
+import { Route as ProtectedNotesAllIndexRouteImport } from './routes/_protected/notes/all/index'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
@@ -35,9 +37,9 @@ const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const ProtectedAllIndexRoute = ProtectedAllIndexRouteImport.update({
-  id: '/all/',
-  path: '/all/',
+const ProtectedJournalsIndexRoute = ProtectedJournalsIndexRouteImport.update({
+  id: '/journals/',
+  path: '/journals/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const AuthSignUpIndexRoute = AuthSignUpIndexRouteImport.update({
@@ -50,20 +52,34 @@ const AuthSignInIndexRoute = AuthSignInIndexRouteImport.update({
   path: '/sign-in/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const ProtectedNotesIdRoute = ProtectedNotesIdRouteImport.update({
+  id: '/notes/$id',
+  path: '/notes/$id',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedNotesAllIndexRoute = ProtectedNotesAllIndexRouteImport.update({
+  id: '/notes/all/',
+  path: '/notes/all/',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/notes/$id': typeof ProtectedNotesIdRoute
   '/sign-in': typeof AuthSignInIndexRoute
   '/sign-up': typeof AuthSignUpIndexRoute
-  '/all': typeof ProtectedAllIndexRoute
+  '/journals': typeof ProtectedJournalsIndexRoute
+  '/notes/all': typeof ProtectedNotesAllIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
+  '/notes/$id': typeof ProtectedNotesIdRoute
   '/sign-in': typeof AuthSignInIndexRoute
   '/sign-up': typeof AuthSignUpIndexRoute
-  '/all': typeof ProtectedAllIndexRoute
+  '/journals': typeof ProtectedJournalsIndexRoute
+  '/notes/all': typeof ProtectedNotesAllIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,24 +87,42 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/notes/$id': typeof ProtectedNotesIdRoute
   '/_auth/sign-in/': typeof AuthSignInIndexRoute
   '/_auth/sign-up/': typeof AuthSignUpIndexRoute
-  '/_protected/all/': typeof ProtectedAllIndexRoute
+  '/_protected/journals/': typeof ProtectedJournalsIndexRoute
+  '/_protected/notes/all/': typeof ProtectedNotesAllIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/sign-in' | '/sign-up' | '/all'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/notes/$id'
+    | '/sign-in'
+    | '/sign-up'
+    | '/journals'
+    | '/notes/all'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/sign-in' | '/sign-up' | '/all'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/notes/$id'
+    | '/sign-in'
+    | '/sign-up'
+    | '/journals'
+    | '/notes/all'
   id:
     | '__root__'
     | '/'
     | '/_auth'
     | '/_protected'
     | '/_protected/dashboard'
+    | '/_protected/notes/$id'
     | '/_auth/sign-in/'
     | '/_auth/sign-up/'
-    | '/_protected/all/'
+    | '/_protected/journals/'
+    | '/_protected/notes/all/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -127,11 +161,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
-    '/_protected/all/': {
-      id: '/_protected/all/'
-      path: '/all'
-      fullPath: '/all'
-      preLoaderRoute: typeof ProtectedAllIndexRouteImport
+    '/_protected/journals/': {
+      id: '/_protected/journals/'
+      path: '/journals'
+      fullPath: '/journals'
+      preLoaderRoute: typeof ProtectedJournalsIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_auth/sign-up/': {
@@ -147,6 +181,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/sign-in'
       preLoaderRoute: typeof AuthSignInIndexRouteImport
       parentRoute: typeof AuthRouteRoute
+    }
+    '/_protected/notes/$id': {
+      id: '/_protected/notes/$id'
+      path: '/notes/$id'
+      fullPath: '/notes/$id'
+      preLoaderRoute: typeof ProtectedNotesIdRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/notes/all/': {
+      id: '/_protected/notes/all/'
+      path: '/notes/all'
+      fullPath: '/notes/all'
+      preLoaderRoute: typeof ProtectedNotesAllIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
     }
   }
 }
@@ -167,12 +215,16 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface ProtectedRouteRouteChildren {
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
-  ProtectedAllIndexRoute: typeof ProtectedAllIndexRoute
+  ProtectedNotesIdRoute: typeof ProtectedNotesIdRoute
+  ProtectedJournalsIndexRoute: typeof ProtectedJournalsIndexRoute
+  ProtectedNotesAllIndexRoute: typeof ProtectedNotesAllIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedDashboardRoute: ProtectedDashboardRoute,
-  ProtectedAllIndexRoute: ProtectedAllIndexRoute,
+  ProtectedNotesIdRoute: ProtectedNotesIdRoute,
+  ProtectedJournalsIndexRoute: ProtectedJournalsIndexRoute,
+  ProtectedNotesAllIndexRoute: ProtectedNotesAllIndexRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(

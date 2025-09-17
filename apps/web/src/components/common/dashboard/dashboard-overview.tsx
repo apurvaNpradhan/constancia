@@ -28,12 +28,12 @@ function Widget({
    onAddClick: () => void;
 }) {
    return (
-      <Card className="border-none shadow-sm">
+      <Card className="border-none shadow-none">
          <CardContent className="p-4 pt-0">
             <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
                <p className="text-sm mb-4">No entries yet</p>
                <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   className="flex items-center gap-2"
                   onClick={onAddClick}

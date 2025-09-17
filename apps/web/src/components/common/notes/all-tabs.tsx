@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 
 const tabs = [
    {
@@ -60,7 +61,9 @@ function AllNotesTab() {
    const trpc = useTRPC();
    const { data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status } =
       useInfiniteQuery({
-         ...trpc.noteRouter.getAllNotes.infiniteQueryOptions({}),
+         ...trpc.noteRouter.getAllNotes.infiniteQueryOptions({
+            limit: 30,
+         }),
          getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
       });
 
@@ -104,17 +107,18 @@ function AllNotesTab() {
                      </button>
                   </div>
                   {openSections[date] !== false && (
-                     <div className="mt-2">
+                     <div className="mt-2 space-y-2">
                         {notes.map((note) => (
-                           <div
-                              key={note.id}
-                              className="flex flex-row gap-2 justify-start text-muted-foreground items-center group relative text-sm hover:bg-accent/70 rounded-sm py-1 px-2 transition-colors duration-200"
-                           >
-                              <p className="text-sm flex flex-row items-center gap-4">
-                                 <IoDocumentTextOutline className="text-muted-foreground" />
-                                 {note.title}
-                              </p>
-                           </div>
+                           <Link to={"/notes/$id"} params={{ id: note.id }} key={note.id}>
+                              <div className="flex flex-row  justify-start text-muted-foreground items-center group relative text-sm hover:bg-accent/70 rounded-sm p-2 transition-colors duration-200">
+                                 <p className="text-sm flex flex-row items-center gap-3">
+                                    <IoDocumentTextOutline className="text-muted-foreground" />
+                                    <span className="dark:text-white text-black ">
+                                       {note.title}
+                                    </span>
+                                 </p>
+                              </div>
+                           </Link>
                         ))}
                      </div>
                   )}

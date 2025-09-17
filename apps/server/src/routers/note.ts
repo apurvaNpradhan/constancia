@@ -2,7 +2,7 @@ import { and, asc, desc, eq, gte, ilike, lte, sql, SQL, type DrizzleError } from
 import { protectedProcedure, router } from "../lib/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { note } from "@/db/schema/note";
+import { note, NoteInsertSchema } from "@/db/schema/note";
 export const notesRouter = router({
    getAllNotes: protectedProcedure
       .input(
@@ -74,8 +74,44 @@ export const notesRouter = router({
             });
          }
       }),
-   getNoteById: {},
-   createNote: {},
+   getNoteById: protectedProcedure
+      .input(
+         z.object({
+            id: z.uuid(),
+         })
+      )
+      .query(async ({ input, ctx }) => {
+         try {
+            const data = await ctx.db.select().from(note).where(eq(note.id, input.id));
+            return data[0];
+         } catch (err) {
+            const e = err as DrizzleError;
+            throw new TRPCError({
+               cause: e.cause,
+               code: "INTERNAL_SERVER_ERROR",
+               message: e.message,
+            });
+         }
+      }),
+   createNote: protectedProcedure.input(NoteInsertSchema).mutation(async ({ input, ctx }) => {
+      try {
+         const data = await ctx.db
+            .insert(note)
+            .values({
+               ...input,
+               userId: ctx.session.user.id,
+            })
+            .returning();
+         return data;
+      } catch (err) {
+         const e = err as DrizzleError;
+         throw new TRPCError({
+            cause: e.cause,
+            code: "INTERNAL_SERVER_ERROR",
+            message: e.message,
+         });
+      }
+   }),
    updateNote: {},
    deleteNote: {},
 });
