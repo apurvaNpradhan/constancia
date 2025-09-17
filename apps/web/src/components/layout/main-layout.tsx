@@ -6,6 +6,7 @@ import { AppSidebar } from "./sidebar/app-sidebar";
 
 interface MainLayoutProps {
    children: React.ReactNode;
+   className?: string;
    header?: React.ReactNode;
    headersNumber?: 1 | 2;
 }
@@ -20,16 +21,26 @@ const isEmptyHeader = (header: React.ReactNode | undefined): boolean => {
    return false;
 };
 
-export default function MainLayout({ children, header, headersNumber = 1 }: MainLayoutProps) {
+export default function MainLayout({
+   children,
+   header,
+   headersNumber = 1,
+   className,
+}: MainLayoutProps) {
    const height = {
       1: "h-[calc(100svh-40px)] lg:h-[calc(100svh-56px)]",
-      2: "h-[calc(100svh-80px)] lg:h-[calc(100svh-96px)]",
+      2: "h-[calc(100svh-60px)] lg:h-[calc(100svh-76px)]",
    };
    return (
       <SidebarProvider>
          <AppSidebar />
          <div className="h-svh overflow-hidden lg:p-2 w-full">
-            <div className="lg:border lg:rounded-md overflow-hidden flex flex-col items-center justify-start bg-container h-full w-full">
+            <div
+               className={cn(
+                  "lg:border lg:rounded-md overflow-hidden flex flex-col items-center justify-start bg-container h-full w-full",
+                  className
+               )}
+            >
                {header}
                <div
                   className={cn(

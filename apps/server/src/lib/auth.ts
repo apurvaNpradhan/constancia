@@ -1,4 +1,5 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
+import { reactStartCookies } from "better-auth/react-start";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { expo } from "@better-auth/expo";
 import { db } from "../db";
@@ -13,11 +14,7 @@ export function createAuth() {
 
          schema: schema,
       }),
-      rateLimit: {
-         window: 10,
-         max: 100,
-         enabled: true,
-      },
+
       trustedOrigins: [env.CORS_ORIGIN, "mybettertapp://", "exp://"],
       emailAndPassword: {
          enabled: true,
@@ -26,6 +23,14 @@ export function createAuth() {
       },
       secret: env.BETTER_AUTH_SECRET,
       baseURL: env.BETTER_AUTH_URL,
+      session: {
+         expiresIn: 60 * 60 * 24 * 7,
+         updateAge: 60 * 60 * 24,
+         cookieCache: {
+            enabled: true,
+            maxAge: 5 * 60,
+         },
+      },
       advanced: {
          defaultCookieAttributes: {
             sameSite: "none",
@@ -37,6 +42,6 @@ export function createAuth() {
             generateId: () => uuidv7(),
          },
       },
-      plugins: [expo()],
+      plugins: [expo(), reactStartCookies()],
    });
 }

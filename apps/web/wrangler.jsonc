@@ -1,19 +1,23 @@
 {
-	"$schema": "./node_modules/wrangler/config-schema.json",
-	"name": "constancia",
-	"main": ".output/server/index.mjs",
-	"compatibility_date": "2025-07-05",
-	"compatibility_flags": ["nodejs_compat"],
-	"assets": {
-		"directory": ".output/public"
-	},
-	"observability": {
-		"enabled": true
-	}
-	// "kv_namespaces": [
-	//   {
-	//     "binding": "CACHE",
-	//     "id": "<Your KV ID>",
-	//   },
-	// ],
+   "$schema": "./node_modules/wrangler/config-schema.json",
+   "name": "constancia",
+   "main": ".output/server/index.mjs",
+   "compatibility_date": "2025-07-05",
+   "compatibility_flags": ["nodejs_compat"],
+   "assets": {
+      "directory": ".output/public",
+   },
+   "vars": {
+      "NODE_ENV": "production",
+      "VITE_SERVER_URL": "https://constancia-api.apurvanarayanpradhan.workers.dev",
+   },
+   "observability": {
+      "enabled": true,
+   },
+   // "kv_namespaces": [
+   //   {
+   //     "binding": "CACHE",
+   //     "id": "<Your KV ID>",
+   //   },
+   // ],
 }

@@ -63,7 +63,7 @@ export const createRouter = () => {
    const router = createTanStackRouter({
       routeTree,
       scrollRestoration: true,
-      defaultPreloadStaleTime: 0,
+      defaultPreloadStaleTime: 60 * 1000,
       defaultPreload: "intent",
       context: { trpc, queryClient },
       defaultNotFoundComponent: () => <DefaultNotFoundScreen />,
@@ -79,14 +79,19 @@ export const createRouter = () => {
    });
    return router;
 };
+import { useRouter } from "@tanstack/react-router";
+
 function DefaultNotFoundScreen() {
    const { data: session, isPending } = authClient.useSession();
+   const router = useRouter();
+
    if (isPending) {
       return <Loader />;
    }
 
    if (!session?.user) {
-      return <Navigate to="/sign-in" />;
+      router.history.push("/sign-in");
+      return null;
    }
 
    return (
@@ -101,7 +106,6 @@ function DefaultNotFoundScreen() {
       </MainLayout>
    );
 }
-
 declare module "@tanstack/react-router" {
    interface Register {
       router: ReturnType<typeof createRouter>;

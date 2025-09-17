@@ -1,4 +1,11 @@
 import {
+   createInsertSchema,
+   createSchemaFactory,
+   createSelectSchema,
+   createUpdateSchema,
+   type Json,
+} from "drizzle-zod";
+import {
    boolean,
    index,
    jsonb,
@@ -13,6 +20,7 @@ import {
 import { uuidv7 } from "uuidv7";
 import { user } from "./auth";
 import { relations, sql } from "drizzle-orm";
+import type z from "zod";
 
 export const note = pgTable(
    "note",
@@ -22,16 +30,18 @@ export const note = pgTable(
          .notNull()
          .references(() => user.id, { onDelete: "cascade" }),
       title: varchar("title", { length: 255 }),
-      content: jsonb("content").$type<JSON>(),
+      content: jsonb("content").$type<Json>(),
       isFavorite: boolean("is_favorite").notNull().default(false),
       isTrashed: boolean("is_trashed").notNull().default(false),
       parentId: uuid("parent_id").references((): AnyPgColumn => note.id),
       createdAt: timestamp("created_at", {
          mode: "string",
-      }).defaultNow(),
-      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }).$onUpdateFn(
-         () => sql`now()`
-      ),
+      })
+         .defaultNow()
+         .notNull(),
+      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true })
+         .$onUpdateFn(() => sql`now()`)
+         .notNull(),
    },
    (table) => [
       {
@@ -57,10 +67,10 @@ export const links = pgTable(
       anchorText: text("anchor_text"),
       context: text("context"),
       isAutomatic: boolean("is_automatic").default(false),
-      createdAt: timestamp("created_at", { mode: "string" }).defaultNow(),
-      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }).$onUpdateFn(
-         () => sql`now()`
-      ),
+      createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
+      updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true })
+         .$onUpdateFn(() => sql`now()`)
+         .notNull(),
    },
    (table) => [
       {
@@ -84,8 +94,8 @@ export const noteMetadata = pgTable(
       key: varchar("key", { length: 100 }).notNull(),
       value: jsonb("value").$type<any>(),
       dataType: varchar("data_type", { length: 20 }).notNull().default("string"),
-      createdAt: timestamp("created_at").notNull().defaultNow(),
-      updatedAt: timestamp("updated_at").notNull().defaultNow(),
+      createdAt: timestamp("created_at").notNull().defaultNow().notNull(),
+      updatedAt: timestamp("updated_at").notNull().defaultNow().notNull(),
    },
    (table) => [
       {
@@ -129,3 +139,27 @@ export const noteMetadataRelations = relations(noteMetadata, ({ one }) => ({
       references: [note.id],
    }),
 }));
+
+export const NoteSchema = createSelectSchema(note);
+export const NoteInsertSchema = createInsertSchema(note);
+export const NoteUpdateSchema = createUpdateSchema(note);
+
+export type NoteSchema = z.infer<typeof NoteSchema>;
+export type NoteInsertSchema = z.infer<typeof NoteInsertSchema>;
+export type NoteUpdateSchema = z.infer<typeof NoteUpdateSchema>;
+
+export const NoteMetadataSchema = createSelectSchema(noteMetadata);
+export const NoteMetadataInsertSchema = createInsertSchema(noteMetadata);
+export const NoteMetadataUpdateSchema = createUpdateSchema(noteMetadata);
+
+export type NoteMetadataSchema = z.infer<typeof NoteMetadataSchema>;
+export type NoteMetadataInsertSchema = z.infer<typeof NoteMetadataInsertSchema>;
+export type NoteMetadataUpdateSchema = z.infer<typeof NoteMetadataUpdateSchema>;
+
+export const LinkSchema = createSelectSchema(links);
+export const LinkInsertSchema = createInsertSchema(links);
+export const LinkUpdateSchema = createUpdateSchema(links);
+
+export type LinkSchema = z.infer<typeof LinkSchema>;
+export type LinkInsertSchema = z.infer<typeof LinkInsertSchema>;
+export type LinkUpdateSchema = z.infer<typeof LinkUpdateSchema>;

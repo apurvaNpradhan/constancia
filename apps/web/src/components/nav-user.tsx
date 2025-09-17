@@ -12,13 +12,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { Skeleton } from "./ui/skeleton";
+import { Button } from "./ui/button";
+import { Link } from "@tanstack/react-router";
 
 export function NavUser() {
-   const { data } = authClient.useSession();
+   const { data: session, isPending } = authClient.useSession();
+
+   if (isPending) {
+      return <Skeleton className="h-9 w-24" />;
+   }
+
+   if (!session) {
+      return (
+         <Button variant="outline" asChild>
+            <Link to="/sign-in">Sign In</Link>
+         </Button>
+      );
+   }
    function handleSignOut() {
       authClient.signOut();
    }
-   const user = data?.user;
+   const user = session?.user;
 
    return (
       <SidebarMenu>

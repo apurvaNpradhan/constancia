@@ -46,3 +46,4 @@ export { appRouter };
 export type { AppRouter };
 export type * from "./lib/context";
 export default app;
+export * from "./db/schema/index";

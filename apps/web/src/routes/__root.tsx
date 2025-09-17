@@ -1,24 +1,34 @@
-import { Toaster } from "@/components/ui/sonner";
-
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
 import {
+   ClientOnly,
+   createRootRouteWithContext,
    HeadContent,
    Outlet,
    Scripts,
-   createRootRouteWithContext,
    useRouterState,
-   useRouteContext,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import Header from "../components/header";
-import appCss from "../index.css?url";
-import Loader from "@/components/loader";
-
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
+import Loader from "@/components/loader";
+import { Toaster } from "@/components/ui/sonner";
 import type { AppRouter } from "../../../server/src/routers";
+import appCss from "../index.css?url";
 import type { QueryClient } from "@tanstack/react-query";
-import { ThemeProvider } from "next-themes";
+import React from "react";
+import { ThemeProvider } from "@/components/theme-provider";
+
+const TanStackRouterDevtools = import.meta.env.PROD
+   ? () => null
+   : React.lazy(() =>
+        import("@tanstack/react-router-devtools").then((res) => ({
+           default: res.TanStackRouterDevtools,
+        }))
+     );
+const TanStackQueryDevtools = import.meta.env.PROD
+   ? () => null
+   : React.lazy(() =>
+        import("@tanstack/react-query-devtools").then((res) => ({
+           default: res.ReactQueryDevtools,
+        }))
+     );
 export interface RouterAppContext {
    trpc: TRPCOptionsProxy<AppRouter>;
    queryClient: QueryClient;
@@ -28,20 +38,24 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
    head: () => ({
       meta: [
          {
-            charSet: "utf-8",
+            charSet: "utf-8", // Ensure this is first
          },
          {
             name: "viewport",
             content: "width=device-width, initial-scale=1",
          },
          {
-            title: "Constancia",
+            title: "My App",
          },
       ],
       links: [
          {
+            rel: "icon",
+            href: "/favicon.ico",
+         },
+         {
             rel: "stylesheet",
-            href: appCss,
+            href: appCss, // Ensure appCss does not include dynamic query params
          },
       ],
    }),
@@ -51,22 +65,21 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
    return (
-      <html lang="en" className="dark" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning>
          <head>
             <HeadContent />
          </head>
          <body>
-            <ThemeProvider
-               attribute="class"
-               defaultTheme="system"
-               enableSystem
-               disableTransitionOnChange
-            >
+            <div className="flex flex-col min-h-screen">
                <Outlet />
-            </ThemeProvider>
+            </div>
             <Toaster richColors />
-            <TanStackRouterDevtools position="bottom-left" />
-            <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
+            <ClientOnly>
+               <React.Suspense>
+                  <TanStackRouterDevtools position="bottom-left" />
+                  <TanStackQueryDevtools buttonPosition="bottom-right" />
+               </React.Suspense>
+            </ClientOnly>
             <Scripts />
          </body>
       </html>
