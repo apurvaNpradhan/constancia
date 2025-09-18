@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_protected/notes/all/")({
 
 function RouteComponent() {
    const [activeTab, setActiveTab] = useState("notes");
+
    return (
       <MainLayout
          header={<Header activeTab={activeTab} setActiveTab={setActiveTab} />}

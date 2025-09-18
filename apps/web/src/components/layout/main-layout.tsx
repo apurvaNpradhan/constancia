@@ -1,7 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { useSidebarStore } from "@/store/sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
+import { SidebarProvider } from "../ui/sidebar";
 import { AppSidebar } from "./sidebar/app-sidebar";
 
 interface MainLayoutProps {

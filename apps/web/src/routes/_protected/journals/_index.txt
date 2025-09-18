@@ -1,0 +1,93 @@
+import { format, isValid, parse } from "date-fns";
+import { createFileRoute, redirect, useSearch } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+import Header from "@/components/header";
+import MainLayout from "@/components/layout/main-layout";
+import type { JSX } from "react";
+import Loader from "@/components/loader";
+
+type JournalFilter = {
+   date: string;
+};
+
+const DATE_FORMAT = "yyyy-MM-dd";
+const DISPLAY_DATE_FORMAT = "MMM d, yyyy";
+const DISPLAY_DAY_FORMAT = "EEEE";
+
+const isValidDateFormat = (dateStr: string): boolean => {
+   const parsed = parse(dateStr, DATE_FORMAT, new Date());
+   return isValid(parsed) && /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+};
+
+const formatDisplayDate = (dateStr: string, isToday: boolean): JSX.Element => {
+   const parsedDate = parse(dateStr, DATE_FORMAT, new Date());
+   return (
+      <div className="flex flex-row gap-2 items-end">
+         {format(parsedDate, DISPLAY_DATE_FORMAT)}
+         <span className={cn("text-lg", isToday && "text-primary")}>
+            {isToday ? "Today" : format(parsedDate, DISPLAY_DAY_FORMAT)}
+         </span>
+      </div>
+   );
+};
+
+export const Route = createFileRoute("/_protected/journals/_index")({
+   component: JournalPage,
+   validateSearch: (search: Record<string, unknown>): JournalFilter => {
+      const today = format(new Date(), DATE_FORMAT);
+      return {
+         date:
+            typeof search.date === "string" && isValidDateFormat(search.date) ? search.date : today,
+      };
+   },
+
+   pendingComponent: () => <Loader />,
+   beforeLoad: async ({ search, context }) => {
+      const today = format(new Date(), DATE_FORMAT);
+      const searchDate = search.date as string | undefined;
+      if (!searchDate || !isValidDateFormat(searchDate)) {
+         return redirect({
+            to: "/journals",
+            search: { date: today },
+            replace: true,
+         });
+      }
+
+      const journalEntry = await context.queryClient.ensureQueryData(
+         context.trpc.noteRouter.getJournalNoteByDate.queryOptions({
+            date: searchDate,
+         })
+      );
+      if (journalEntry) {
+         throw redirect({
+            to: "/notes/$id",
+            params: { id: journalEntry.id },
+         });
+      }
+   },
+   errorComponent: ({ error }) => (
+      <MainLayout header={<Header />}>
+         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 mt-10 flex flex-col gap-4">
+            <h1 className="text-xl lg:text-3xl font-bold">Error</h1>
+            <p className="text-red-500">Failed to load journal: {error.message}</p>
+         </div>
+      </MainLayout>
+   ),
+});
+
+function JournalPage() {
+   const { date } = useSearch({ from: "/_protected/journals/" });
+   const isToday = date === format(new Date(), DATE_FORMAT);
+
+   const formattedDate = date
+      ? formatDisplayDate(date, isToday)
+      : format(new Date(), `${DISPLAY_DAY_FORMAT}, ${DISPLAY_DATE_FORMAT}`);
+
+   return (
+      <MainLayout header={<Header />}>
+         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 mt-10 flex flex-col gap-4">
+            <h1 className="text-xl lg:text-3xl font-bold">{formattedDate}</h1>
+         </div>
+      </MainLayout>
+   );
+}

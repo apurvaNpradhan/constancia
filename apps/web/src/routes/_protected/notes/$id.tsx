@@ -34,7 +34,13 @@ function RouteComponent() {
             </MainLayout>
          );
       case "journal":
-         return <MainLayout>Hello "/_protected/$id"!{id}</MainLayout>;
+         return (
+            <MainLayout header={<Header />}>
+               <div className="p-4">
+                  <h1 className="text-2xl font-semibold text-foreground">{data.title}</h1>
+               </div>
+            </MainLayout>
+         );
       case "workout":
          return <MainLayout>Hello "/_protected/$id"!{id}</MainLayout>;
       case "habit":

@@ -114,7 +114,7 @@ function AllNotesTab() {
                                  <p className="text-sm flex flex-row items-center gap-3">
                                     <IoDocumentTextOutline className="text-muted-foreground" />
                                     <span className="dark:text-white text-black ">
-                                       {note.title}
+                                       {note.type === "journal" ? note.entryDate : note.title}
                                     </span>
                                  </p>
                               </div>

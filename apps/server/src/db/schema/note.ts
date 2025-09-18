@@ -8,6 +8,7 @@ import {
 } from "drizzle-zod";
 import {
    boolean,
+   date,
    index,
    jsonb,
    pgEnum,
@@ -37,6 +38,7 @@ export const note = pgTable(
       type: typeEnum("type").notNull().default("note"),
       isFavorite: boolean("is_favorite").notNull().default(false),
       isTrashed: boolean("is_trashed").notNull().default(false),
+      entryDate: date("entry_date"),
       parentId: uuid("parent_id").references((): AnyPgColumn => note.id),
       createdAt: timestamp("created_at", {
          mode: "string",
@@ -50,6 +52,7 @@ export const note = pgTable(
    (table) => [
       {
          userIdIdx: index("note_user_id_idx").on(table.userId),
+         userDateIdx: unique("unique_user_date").on(table.userId, table.entryDate),
          titleIdx: index("note_title_idx").on(table.title),
          createdAtIdx: index("note_created_at_idx").on(table.createdAt),
          parentIdIdx: index("note_parent_id_idx").on(table.parentId),
