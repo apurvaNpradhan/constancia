@@ -20,6 +20,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import MainLayout from "@/components/layout/main-layout";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import type { note } from "@constancia/server";
 
 export const Route = createFileRoute("/_protected/journals/")({
    component: RouteComponent,
@@ -51,11 +52,15 @@ const JournalTab = ({ currentDate }: { currentDate: Date }) => {
    const mutation = useMutation(trpc.noteRouter.createNote.mutationOptions());
    const queryClient = useQueryClient();
    const navigate = useNavigate();
-   const createJournalNote = async (e: React.MouseEvent, { date }: { date: string }) => {
+   const createJournalNote = async (
+      e: React.MouseEvent,
+      { note }: { note: note.NoteInsertSchema }
+   ) => {
       e.stopPropagation();
       const [data] = await mutation.mutateAsync({
          type: "journal",
-         entryDate: date,
+         entryDate: note.entryDate,
+         title: note.title,
       });
       queryClient.invalidateQueries({
          queryKey: trpc.journal.getJournalsByMonth.queryKey(),
@@ -119,9 +124,9 @@ const JournalTab = ({ currentDate }: { currentDate: Date }) => {
                      <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div
                            className={cn(
-                              "text-sm  tabular-nums w-6 text-right",
+                              "text-sm tabular-nums w-6 text-right flex-shrink-0",
                               note ? "text-foreground" : "text-muted-foreground",
-                              isCurrentDay && "text-primary "
+                              isCurrentDay && "text-primary"
                            )}
                         >
                            {format(day, "dd")}
@@ -129,7 +134,7 @@ const JournalTab = ({ currentDate }: { currentDate: Date }) => {
 
                         <div
                            className={cn(
-                              "text-xs font-medium w-4 text-center uppercase",
+                              "text-xs font-medium w-4 text-center uppercase flex-shrink-0",
                               note ? "text-muted-foreground" : "text-muted-foreground/60",
                               isCurrentDay && "text-primary/80"
                            )}
@@ -139,13 +144,18 @@ const JournalTab = ({ currentDate }: { currentDate: Date }) => {
 
                         <div
                            className={cn(
-                              "text-sm truncate",
+                              "text-sm truncate flex flex-col gap-1 flex-1",
                               note
                                  ? "text-foreground font-medium"
                                  : "text-muted-foreground/40 italic text-xs"
                            )}
                         >
-                           {note ? (note.title ? note.title : "Untitled") : "No entry"}
+                           <span className="text-sm">
+                              {note ? (note.title ? note.title : "Untitled") : "No entry"}
+                           </span>
+                           <span className="text-xs text-muted-foreground/60 truncate">
+                              {note?.content?.[0].content[0]?.text}
+                           </span>
                         </div>
                      </div>
 
@@ -163,7 +173,11 @@ const JournalTab = ({ currentDate }: { currentDate: Date }) => {
                            </Button>
                         ) : (
                            <Button
-                              onClick={(e) => createJournalNote(e, { date: dateStr })}
+                              onClick={(e) =>
+                                 createJournalNote(e, {
+                                    note: { entryDate: dateStr, title: dateStr },
+                                 })
+                              }
                               variant="ghost"
                               size="sm"
                               className={cn(

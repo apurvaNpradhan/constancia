@@ -172,6 +172,7 @@
    }
 } */
 @import "tailwindcss";
+@source "../node_modules/@blocknote/shadcn";
 @import "tw-animate-css";
 /*---break--- */
 @custom-variant dark (&:is(.dark *));
@@ -328,6 +329,23 @@
    --shadow-xl: var(--shadow-xl);
    --shadow-2xl: var(--shadow-2xl);
 }
+
+/* Adds border and shadow to editor */
+.bn-container[data-theming-css] .bn-editor * {
+   background-color: var(--color-background);
+}
+.bn-container[data-theming-css][data-color-scheme] {
+   --bn-colors-editor-background: var(--color-background);
+}
+.bn-block[data-theming-css] .bn-block-content {
+   background-color: var(--color-background);
+}
+/* Makes slash menu hovered items blue */
+.bn-container[data-theming-css] .bn-suggestion-menu-item[aria-selected="true"],
+.bn-container[data-theming-css] .bn-suggestion-menu-item:hover {
+   /* background-color: var(--color-primary); */
+}
+
 @layer base {
    * {
       @apply border-border outline-ring/50;

@@ -209,6 +209,31 @@ export const notesRouter = router({
             });
          }
       }),
-   updateNote: {},
+   updateNote: protectedProcedure
+      .input(
+         z.object({
+            id: z.uuid(),
+            title: z.string().optional(),
+            content: z.string().optional(),
+         })
+      )
+      .mutation(async ({ input, ctx }) => {
+         try {
+            const { id, title, content } = input;
+            const data = await ctx.db
+               .update(note)
+               .set({ title, content })
+               .where(and(eq(note.id, id), eq(note.userId, ctx.session.user.id)))
+               .returning();
+            return data[0];
+         } catch (err) {
+            const e = err as DrizzleError;
+            throw new TRPCError({
+               cause: e.cause,
+               code: "INTERNAL_SERVER_ERROR",
+               message: e.message,
+            });
+         }
+      }),
    deleteNote: {},
 });
