@@ -2,7 +2,7 @@ import { and, asc, desc, eq, gte, ilike, lte, sql, SQL, type DrizzleError } from
 import { protectedProcedure, router } from "../lib/trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { note, NoteInsertSchema } from "@/db/schema/note";
+import { note, NoteInsertSchema, NoteUpdateSchema } from "@/db/schema/note";
 export const notesRouter = router({
    getAllNotes: protectedProcedure
       .input(
@@ -211,18 +211,16 @@ export const notesRouter = router({
       }),
    updateNote: protectedProcedure
       .input(
-         z.object({
+         NoteUpdateSchema.extend({
             id: z.uuid(),
-            title: z.string().optional(),
-            content: z.string().optional(),
          })
       )
       .mutation(async ({ input, ctx }) => {
          try {
-            const { id, title, content } = input;
+            const { id, title, content, isFavorite } = input;
             const data = await ctx.db
                .update(note)
-               .set({ title, content })
+               .set({ title, content, isFavorite })
                .where(and(eq(note.id, id), eq(note.userId, ctx.session.user.id)))
                .returning();
             return data[0];

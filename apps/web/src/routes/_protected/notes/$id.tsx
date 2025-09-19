@@ -2,8 +2,10 @@ import NoteEditor from "@/components/common/notes/editor/notes-editor";
 import Header from "@/components/header";
 import MainLayout from "@/components/layout/main-layout";
 import { Input } from "@/components/ui/input";
+import { Toggle } from "@/components/ui/toggle";
 import { getQueryClient } from "@/router";
 import { useTRPC } from "@/utils/trpc";
+import type { Block } from "@blocknote/core";
 import type { note } from "@constancia/server";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
@@ -23,11 +25,7 @@ export const Route = createFileRoute("/_protected/notes/$id")({
 function RouteComponent() {
    const { id } = Route.useParams();
    const trpc = useTRPC();
-   const { data, isPending } = useSuspenseQuery(
-      trpc.noteRouter.getNoteById.queryOptions({
-         id,
-      })
-   );
+   const { data, isPending } = useSuspenseQuery(trpc.noteRouter.getNoteById.queryOptions({ id }));
    if (isPending) {
       return <div>Loading...</div>;
    }
@@ -37,28 +35,49 @@ function RouteComponent() {
    const queryClient = getQueryClient();
    const mutation = useMutation({
       ...trpc.noteRouter.updateNote.mutationOptions(),
-      onMutate: async (data) => {
-         queryClient.setQueryData(
-            trpc.noteRouter.getNoteById.queryOptions({
-               id,
-            }).queryKey,
-            (oldData) =>
-               oldData
-                  ? {
-                       ...oldData,
-                       title: data.title ?? oldData.title,
-                       content: data.content ?? oldData.content,
-                    }
-                  : oldData
-         );
-         return undefined;
+      onSettled: (data) => {
+         if (data?.id) {
+            queryClient.invalidateQueries({
+               queryKey: trpc.noteRouter.getNoteById.queryKey({ id: data.id }),
+            });
+            if (data.type === "journal" && data.entryDate) {
+               const entryDate = new Date(data.entryDate);
+               if (!isNaN(entryDate.getTime())) {
+                  queryClient.invalidateQueries({
+                     queryKey: trpc.journal.getJournalsByMonth.queryKey({
+                        month: entryDate.getMonth() + 1, // Months are 1-12
+                        year: entryDate.getFullYear(),
+                     }),
+                  });
+               }
+            }
+
+            queryClient.invalidateQueries({
+               queryKey: trpc.noteRouter.getAllNotes.infiniteQueryKey({ limit: 30 }),
+            });
+         }
+      },
+      onError: (error) => {
+         setError("Failed to save note. Please try again.");
       },
    });
-   const debouncedSave = useDebouncedCallback(async (value: note.NoteUpdateSchema) => {
+
+   const debouncedTitleSave = useDebouncedCallback(async (value: note.NoteUpdateSchema) => {
       try {
          await mutation.mutateAsync({
             id: data.id,
             title: value.title ?? "",
+         });
+      } catch (err) {
+         setError("Failed to save note. Please try again.");
+      }
+   }, 1000);
+
+   const debouncedContentSave = useDebouncedCallback(async (jsonBlocks: Block[]) => {
+      try {
+         await mutation.mutateAsync({
+            id: data.id,
+            content: JSON.stringify(jsonBlocks),
          });
       } catch (err) {
          setError("Failed to save note. Please try again.");
@@ -73,7 +92,7 @@ function RouteComponent() {
 
    const handleSave = (value: string) => {
       setTitle(value);
-      debouncedSave({ title: value });
+      debouncedTitleSave({ title: value });
    };
 
    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -99,7 +118,8 @@ function RouteComponent() {
             <MainLayout header={<Header />}>
                <div className="p-4 max-w-4xl mx-auto">
                   <Input {...inputProps} />
-                  <NoteEditor data={data} />
+
+                  <NoteEditor data={data} debouncedSave={debouncedContentSave} />
                </div>
             </MainLayout>
          );
@@ -108,7 +128,7 @@ function RouteComponent() {
             <MainLayout header={<Header />}>
                <div className="p-4 w-full max-w-5xl mx-auto">
                   <Input {...inputProps} />
-                  <NoteEditor data={data} />
+                  <NoteEditor data={data} debouncedSave={debouncedContentSave} />
                </div>
             </MainLayout>
          );

@@ -334,6 +334,9 @@
 .bn-container[data-theming-css] .bn-editor * {
    background-color: var(--color-background);
 }
+.checklist {
+   margin-right: 2px;
+}
 .bn-container[data-theming-css][data-color-scheme] {
    --bn-colors-editor-background: var(--color-background);
 }
