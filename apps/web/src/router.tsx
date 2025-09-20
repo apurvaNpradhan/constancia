@@ -96,7 +96,7 @@ function DefaultNotFoundScreen() {
 
    return (
       <MainLayout>
-         <div className="mx-auto w-full flex items-center justify-center min-h-dvh flex-col gap-2">
+         <div className="mx-auto w-full flex items-center justify-center min-h-svh font-sans antialiased flex-col gap-2">
             <MdNearbyError className="text-9xl text-muted-foreground" />
             <span className="font-semibold">Not Found</span>
             <span className="text-muted-foreground">
