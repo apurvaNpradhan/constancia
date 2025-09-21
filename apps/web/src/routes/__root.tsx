@@ -76,7 +76,7 @@ function RootDocument() {
                enableSystem
                disableTransitionOnChange
             >
-               <div className="flex flex-col min-h-screen">
+               <div className="mx-auto w-full flex items-center justify-center min-h-svh font-sans antialiased flex-col gap-2">
                   <Outlet />
                </div>
                <Toaster richColors />

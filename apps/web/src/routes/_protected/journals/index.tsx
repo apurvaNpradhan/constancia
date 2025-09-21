@@ -154,7 +154,8 @@ const JournalTab = ({ currentDate }: { currentDate: Date }) => {
                               {note ? (note.title ? note.title : "Untitled") : "No entry"}
                            </span>
                            <span className="text-xs text-muted-foreground/60 truncate">
-                              {note?.content?.[0].content[0]?.text}
+                              {/* {note?.content?.[0].content[0]?.text} */}
+                              {note?.content?.[0].children?.[0]?.text}
                            </span>
                         </div>
                      </div>
