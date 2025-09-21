@@ -64,7 +64,7 @@ function WidgetSkeleton() {
    );
 }
 
-function DashboardOverview() {
+function HomeOverview() {
    const { data, isPending } = authClient.useSession();
 
    if (isPending) {
@@ -114,4 +114,4 @@ function DashboardOverview() {
       </div>
    );
 }
-export default DashboardOverview;
+export default HomeOverview;

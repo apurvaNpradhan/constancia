@@ -10,13 +10,16 @@ import { Badge } from "@/components/ui/badge";
 
 function RouteComponent() {
    return (
-      <div className="w-full min-h-dvh flex ">
+      <div className="w-full min-h-dvh flex  flex-col">
+         <header className="flex flex-row justify-between items-center  p-2 border-b">
+            <span className="font-bold text-xl">Constancia</span>
+            <SignInComponent />
+         </header>
          <div className="container mx-auto px-4 sm:px-6">
             <div className="flex gap-6 sm:gap-8 py-12 sm:py-20 lg:py-32 items-center justify-center flex-col text-center">
                <div>
-                  <Badge variant="default" className="text-xs sm:text-sm">
-                     Work in progress
-                     <Hammer className="w-4 h-4 ml-2" />
+                  <Badge className="bg-amber-600/10 dark:bg-amber-600/20 hover:bg-amber-600/10 text-amber-500 shadow-none rounded-full">
+                     <div className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-2" /> In Progress
                   </Badge>
                </div>
 
@@ -29,9 +32,7 @@ function RouteComponent() {
                   </p>
                </div>
 
-               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  <SignInComponent />
-               </div>
+               <div className=" gap-3 w-full sm:w-auto"></div>
             </div>
          </div>
       </div>
@@ -51,9 +52,9 @@ function SignInComponent() {
          )}
          disabled={isPending}
       >
-         <Link to={session ? "/dashboard" : "/sign-in"} className="flex items-center gap-2">
+         <Link to={session ? "/home" : "/sign-in"} className="flex items-center gap-2">
             <User className="w-4 h-4" />
-            <span>{session ? "Dashboard" : "Sign In"}</span>
+            <span>{session ? "Home" : "Sign In"}</span>
          </Link>
       </Button>
    );

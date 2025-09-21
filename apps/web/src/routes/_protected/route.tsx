@@ -1,3 +1,4 @@
+import { SettingsModalProvider } from "@/components/common/settings/settings-modal-provider";
 import Loader from "@/components/loader";
 import { authClient } from "@/lib/auth-client";
 import { createFileRoute, Navigate, Outlet } from "@tanstack/react-router";
@@ -17,5 +18,9 @@ function RouteComponent() {
       return <Navigate to="/sign-in" />;
    }
 
-   return <Outlet />;
+   return (
+      <div className="w-full">
+         <Outlet />
+      </div>
+   );
 }

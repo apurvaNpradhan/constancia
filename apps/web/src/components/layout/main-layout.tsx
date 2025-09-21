@@ -2,6 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { SidebarProvider } from "../ui/sidebar";
 import { AppSidebar } from "./sidebar/app-sidebar";
+import { SettingsModalProvider } from "../common/settings/settings-modal-provider";
 
 interface MainLayoutProps {
    children: React.ReactNode;
@@ -31,27 +32,33 @@ export default function MainLayout({
       2: "h-[calc(100svh-60px)] lg:h-[calc(100svh-76px)]",
    };
    return (
-      <SidebarProvider>
-         <AppSidebar />
-         <div className="h-svh overflow-hidden lg:p-2 w-full">
-            <div
-               className={cn(
-                  "lg:border lg:rounded-md overflow-hidden flex flex-col items-center justify-start bg-container h-full w-full",
-                  className
-               )}
-            >
-               {header}
+      <div>
+         <SidebarProvider>
+            <AppSidebar />
+            <div className="h-svh overflow-hidden lg:p-2 w-full">
                <div
                   className={cn(
-                     "overflow-auto w-full",
-                     isEmptyHeader(header) ? "h-full" : height[headersNumber as keyof typeof height]
+                     "lg:border lg:rounded-md overflow-hidden flex flex-col items-center justify-start bg-container h-full w-full",
+                     className
                   )}
                >
-                  {children}
+                  {header}
+                  <div
+                     className={cn(
+                        "overflow-auto w-full",
+                        isEmptyHeader(header)
+                           ? "h-full"
+                           : height[headersNumber as keyof typeof height]
+                     )}
+                  >
+                     {children}
+                  </div>
                </div>
             </div>
-         </div>
-      </SidebarProvider>
+         </SidebarProvider>
+
+         <SettingsModalProvider />
+      </div>
       // <SidebarProvider open={rightOpen} onOpenChange={setRightOpen}>
       //    <SidebarProvider open={leftOpen} onOpenChange={setLeftOpen}>
       //       <SidebarLeft side="left" />

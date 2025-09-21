@@ -1,4 +1,3 @@
-import { ModeToggle } from "@/components/mode-toggle";
 import {
    Breadcrumb,
    BreadcrumbList,
@@ -6,12 +5,6 @@ import {
    BreadcrumbLink,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-   DropdownMenu,
-   DropdownMenuContent,
-   DropdownMenuItem,
-   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Ellipsis } from "lucide-react";
@@ -59,9 +52,6 @@ export function HeaderNav({ activeTab, setActiveTab, monthPicker }: HeaderProps)
                   {monthPicker}
                </div>
             </Breadcrumb>
-         </div>
-         <div className="flex items-center">
-            <ModeToggle />
          </div>
       </div>
    );

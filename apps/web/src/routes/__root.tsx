@@ -14,6 +14,7 @@ import appCss from "../index.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import React from "react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SettingsModalProvider } from "@/components/common/settings/settings-modal-provider";
 
 const TanStackRouterDevtools = import.meta.env.PROD
    ? () => null

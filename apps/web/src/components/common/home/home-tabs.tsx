@@ -1,11 +1,12 @@
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { LayoutDashboardIcon } from "lucide-react";
 import { BsFillJournalBookmarkFill, BsGift } from "react-icons/bs";
 import { CiDumbbell } from "react-icons/ci";
-import DashboardOverview from "./dashboard-overview";
+import HomeOverview from "./home-overview";
 import JournalOverview from "./journal-overview";
 import WorkoutOverview from "./workout-overview";
 import HabitOverview from "./habit-overview";
+import type { GoHomeFill } from "react-icons/go";
+import { Home } from "lucide-react";
 
 interface Tab {
    name: string;
@@ -19,13 +20,13 @@ interface Props {
    setActiveTab?: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function DashboardTabs({ activeTab, setActiveTab }: Props) {
+function HomeTabs({ activeTab, setActiveTab }: Props) {
    const tabs: Tab[] = [
       {
          name: "Overview",
          value: "overview",
-         icon: LayoutDashboardIcon,
-         content: <DashboardOverview />,
+         icon: Home,
+         content: <HomeOverview />,
       },
       {
          name: "Journal",
@@ -55,4 +56,4 @@ function DashboardTabs({ activeTab, setActiveTab }: Props) {
    );
 }
 
-export default DashboardTabs;
+export default HomeTabs;

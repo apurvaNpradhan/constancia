@@ -12,6 +12,7 @@ import { Link } from "@tanstack/react-router";
 import { MdOutlineStar, MdOutlineStarBorder } from "react-icons/md";
 import { getQueryClient } from "@/router";
 import { toast } from "sonner";
+import { FavoriteToggle } from "./favorite-toggle";
 
 const tabs = [
    {
@@ -58,34 +59,7 @@ const groupNoteByDate = (notes: note.NoteSchema[]) => {
       {} as Record<string, note.NoteSchema[]>
    );
 };
-function FavouriteToggle({
-   note,
-   onToggle,
-}: {
-   note: note.NoteSchema;
-   onToggle: (id: string, isFavorite: boolean) => void;
-}) {
-   const [value, setValue] = useState(note.isFavorite);
-   useEffect(() => {
-      setValue(note.isFavorite);
-   }, [note.isFavorite]);
-   const handleToggle = (e: React.MouseEvent<HTMLButtonElement>, isFavorite: boolean) => {
-      e.stopPropagation(); // Prevent the click event from bubbling to the Link
-      setValue(isFavorite);
-      onToggle(note.id, isFavorite);
-   };
-   return (
-      <Button
-         type="button"
-         onClick={(e) => handleToggle(e, !value)}
-         variant="ghost"
-         size="sm"
-         className="h-4 w-4 text-xs hover:bg-primary/10 hover:text-primary opacity-60 group-hover:opacity-100 transition-opacity"
-      >
-         {value ? <MdOutlineStar /> : <MdOutlineStarBorder />}
-      </Button>
-   );
-}
+
 function AllNotesTab() {
    const trpc = useTRPC();
    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useInfiniteQuery({
@@ -197,7 +171,7 @@ function AllNotesTab() {
                                  </p>
                               </div>
                               <div className="flex flex-row items-center">
-                                 <FavouriteToggle
+                                 <FavoriteToggle
                                     note={note}
                                     onToggle={() => toggleFavorite(note.id, note.isFavorite)}
                                  />

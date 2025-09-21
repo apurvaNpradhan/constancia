@@ -9,7 +9,9 @@ export const notesRouter = router({
          z.object({
             limit: z.number().min(1).max(100).default(10),
             cursor: z.string().optional(),
-            orderBy: z.enum(["created_asc", "created_desc"]).default("created_asc"),
+            orderBy: z
+               .enum(["created_asc", "created_desc", "updated_desc", "updated_asc"])
+               .default("created_asc"),
             dateFrom: z.string().optional(),
             dateTo: z.string().optional(),
             search: z.string().optional(),
@@ -41,6 +43,12 @@ export const notesRouter = router({
                   break;
                case "created_desc":
                   orderByClause = desc(note.createdAt);
+                  break;
+               case "updated_desc":
+                  orderByClause = desc(note.updatedAt);
+                  break;
+               case "updated_asc":
+                  orderByClause = asc(note.updatedAt);
                   break;
                default:
                   orderByClause = desc(note.createdAt);

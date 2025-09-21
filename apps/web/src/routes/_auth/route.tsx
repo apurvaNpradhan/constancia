@@ -13,7 +13,7 @@ function RouteComponent() {
       return <Loader />;
    }
    if (session?.user) {
-      return <Navigate to="/dashboard" />;
+      return <Navigate to="/home" />;
    }
    return <Outlet />;
 }

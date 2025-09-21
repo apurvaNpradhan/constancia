@@ -1,21 +1,8 @@
-import { ModeToggle } from "@/components/mode-toggle";
-import {
-   Breadcrumb,
-   BreadcrumbList,
-   BreadcrumbItem,
-   BreadcrumbLink,
-} from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-   DropdownMenu,
-   DropdownMenuContent,
-   DropdownMenuItem,
-   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, Ellipsis } from "lucide-react";
-import { HeaderOptions } from "./header-options";
+import { ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
@@ -66,12 +53,12 @@ export function HeaderNav({ activeTab, setActiveTab }: HeaderProps) {
                      onValueChange={setActiveTab}
                      className="items-center hidden md:flex"
                   >
-                     <TabsList className="bg-background">
+                     <TabsList className="bg-background ">
                         {tabs.map((tab) => (
                            <TabsTrigger
                               key={tab.value}
                               value={tab.value}
-                              className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary dark:data-[state=active]:text-primary dark:data-[state=active]:bg-primary/20 data-[state=active]:shadow-none dark:data-[state=active]:border-transparent"
+                              className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary dark:data-[state=active]:text-primary dark:data-[state=active]:bg-primary/20 data-[state=active]:shadow-none dark:data-[state=active]:border-transparent"
                            >
                               {tab.name}
                            </TabsTrigger>
@@ -82,28 +69,14 @@ export function HeaderNav({ activeTab, setActiveTab }: HeaderProps) {
             </Breadcrumb>
          </div>
          <div className="flex items-center gap-2">
-            <Popover>
-               <Button size={"sm"} variant={"ghost"} onClick={handleCreatePage}>
-                  New Doc
-                  <PopoverTrigger asChild>
-                     <Button
-                        size={"icon"}
-                        variant={"ghost"}
-                        className="h-5 w-4 flex items-center "
-                        type="button"
-                     >
-                        <ChevronDown className="h-4 w-4" />
-                     </Button>
-                  </PopoverTrigger>
-               </Button>
-               <PopoverContent
-                  className="w-[200px] rounded-md border border-border bg-background p-2 shadow-lg"
-                  align="end"
-               >
-                  <div>He</div>
-               </PopoverContent>
-            </Popover>
-            <ModeToggle />
+            <Button size={"sm"} variant={"ghost"} onClick={handleCreatePage}>
+               New Doc
+               <Button
+                  size={"icon"}
+                  variant={"ghost"}
+                  className="h-5 w-4 flex items-center "
+               ></Button>
+            </Button>
          </div>
       </div>
    );

@@ -83,7 +83,6 @@ export default function NoteEditor({ data, debouncedSave }: NoteEditorProps) {
          ...BlockPlaceholderKit,
          ...FloatingToolbarKit,
          ...ToggleKit,
-         ...FixedToolbarKit,
       ],
    });
 

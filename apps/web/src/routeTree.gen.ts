@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
+import { Route as ProtectedHomeRouteImport } from './routes/_protected/home'
 import { Route as ProtectedJournalsIndexRouteImport } from './routes/_protected/journals/index'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/sign-up/index'
 import { Route as AuthSignInIndexRouteImport } from './routes/_auth/sign-in/index'
@@ -32,9 +32,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const ProtectedHomeRoute = ProtectedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
 const ProtectedJournalsIndexRoute = ProtectedJournalsIndexRouteImport.update({
@@ -65,7 +65,7 @@ const ProtectedNotesAllIndexRoute = ProtectedNotesAllIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof ProtectedDashboardRoute
+  '/home': typeof ProtectedHomeRoute
   '/notes/$id': typeof ProtectedNotesIdRoute
   '/sign-in': typeof AuthSignInIndexRoute
   '/sign-up': typeof AuthSignUpIndexRoute
@@ -74,7 +74,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof ProtectedDashboardRoute
+  '/home': typeof ProtectedHomeRoute
   '/notes/$id': typeof ProtectedNotesIdRoute
   '/sign-in': typeof AuthSignInIndexRoute
   '/sign-up': typeof AuthSignUpIndexRoute
@@ -86,7 +86,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_protected': typeof ProtectedRouteRouteWithChildren
-  '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/home': typeof ProtectedHomeRoute
   '/_protected/notes/$id': typeof ProtectedNotesIdRoute
   '/_auth/sign-in/': typeof AuthSignInIndexRoute
   '/_auth/sign-up/': typeof AuthSignUpIndexRoute
@@ -97,7 +97,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
+    | '/home'
     | '/notes/$id'
     | '/sign-in'
     | '/sign-up'
@@ -106,7 +106,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
+    | '/home'
     | '/notes/$id'
     | '/sign-in'
     | '/sign-up'
@@ -117,7 +117,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_protected'
-    | '/_protected/dashboard'
+    | '/_protected/home'
     | '/_protected/notes/$id'
     | '/_auth/sign-in/'
     | '/_auth/sign-up/'
@@ -154,11 +154,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_protected/dashboard': {
-      id: '/_protected/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof ProtectedDashboardRouteImport
+    '/_protected/home': {
+      id: '/_protected/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof ProtectedHomeRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_protected/journals/': {
@@ -214,14 +214,14 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface ProtectedRouteRouteChildren {
-  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedHomeRoute: typeof ProtectedHomeRoute
   ProtectedNotesIdRoute: typeof ProtectedNotesIdRoute
   ProtectedJournalsIndexRoute: typeof ProtectedJournalsIndexRoute
   ProtectedNotesAllIndexRoute: typeof ProtectedNotesAllIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedHomeRoute: ProtectedHomeRoute,
   ProtectedNotesIdRoute: ProtectedNotesIdRoute,
   ProtectedJournalsIndexRoute: ProtectedJournalsIndexRoute,
   ProtectedNotesAllIndexRoute: ProtectedNotesAllIndexRoute,

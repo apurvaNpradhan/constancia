@@ -1,5 +1,5 @@
 import NoteEditor from "@/components/common/notes/editor/notes-editor";
-import Header from "@/components/header";
+import { Header } from "@/components/layout/headers/note/header";
 import MainLayout from "@/components/layout/main-layout";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
@@ -57,10 +57,19 @@ function RouteComponent() {
             });
          }
       },
+
       onError: (error) => {
          setError("Failed to save note. Please try again.");
       },
    });
+   const toggleFavorite = async (id: string, isFavorite: boolean) => {
+      window.event?.preventDefault();
+      window.event?.stopPropagation();
+      await mutation.mutateAsync({
+         id,
+         isFavorite: !isFavorite,
+      });
+   };
 
    const debouncedTitleSave = useDebouncedCallback(async (value: note.NoteUpdateSchema) => {
       try {
@@ -115,7 +124,7 @@ function RouteComponent() {
    switch (data?.type) {
       case "note":
          return (
-            <MainLayout header={<Header />}>
+            <MainLayout header={<Header data={data} />}>
                <div className="max-w-6xl mx-auto flex flex-col ">
                   <Input {...inputProps} />
                   <NoteEditor data={data} debouncedSave={debouncedContentSave} />
@@ -124,7 +133,7 @@ function RouteComponent() {
          );
       case "journal":
          return (
-            <MainLayout header={<Header />}>
+            <MainLayout header={<Header data={data} />}>
                <div className="max-w-6xl mx-auto flex flex-col ">
                   <Input {...inputProps} />
                   <NoteEditor data={data} debouncedSave={debouncedContentSave} />

@@ -10,9 +10,10 @@ export function NavMain({
 }: {
    items: {
       title: string;
-      url: string;
+      url?: string;
       icon: IconType;
       isActive?: boolean;
+      Action?: () => void;
    }[];
 }) {
    const isActive = useIsRouteActive;
@@ -20,7 +21,11 @@ export function NavMain({
       <SidebarMenu>
          {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-               <SidebarMenuButton asChild isActive={isActive(item.url)}>
+               <SidebarMenuButton
+                  asChild
+                  isActive={item.url ? isActive(item.url) : item.isActive}
+                  onClick={item.Action}
+               >
                   <Link to={item.url}>
                      <item.icon className="text-muted-foreground" />
                      <span>{item.title}</span>

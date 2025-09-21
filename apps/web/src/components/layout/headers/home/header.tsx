@@ -1,4 +1,3 @@
-import { ModeToggle } from "@/components/mode-toggle";
 import {
    Breadcrumb,
    BreadcrumbItem,
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Ellipsis, LayoutDashboardIcon } from "lucide-react";
+import { Ellipsis, Home } from "lucide-react";
 import { BsFillJournalBookmarkFill, BsGift } from "react-icons/bs";
 import { CiDumbbell } from "react-icons/ci";
 interface HeaderProps {
@@ -29,7 +28,7 @@ export const Header = ({ setActiveTab, activeTab }: HeaderProps) => {
    }
 
    const tabs: Tab[] = [
-      { name: "Overview", value: "overview", icon: LayoutDashboardIcon },
+      { name: "Overview", value: "overview", icon: Home },
       { name: "Journal", value: "journal", icon: BsFillJournalBookmarkFill },
       { name: "Workouts", value: "workouts", icon: CiDumbbell },
       { name: "Habits", value: "habits", icon: BsGift },
@@ -39,12 +38,11 @@ export const Header = ({ setActiveTab, activeTab }: HeaderProps) => {
       <div className="flex flex-col w-full ">
          <div className="w-full flex justify-between py-1 items-center border-b h-10">
             <div className="flex items-center gap-2">
-               {" "}
                <SidebarTrigger />
                <Breadcrumb className="">
                   <BreadcrumbList>
                      <BreadcrumbItem className="hidden lg:block text-xs">
-                        <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+                        <BreadcrumbLink href="/home">Home</BreadcrumbLink>
                      </BreadcrumbItem>
                      <DropdownMenu>
                         <DropdownMenuTrigger>
@@ -73,9 +71,6 @@ export const Header = ({ setActiveTab, activeTab }: HeaderProps) => {
                      </Tabs>
                   </BreadcrumbList>
                </Breadcrumb>
-            </div>
-            <div className="flex items-center">
-               <ModeToggle />
             </div>
          </div>
          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex md:hidden py-1">
