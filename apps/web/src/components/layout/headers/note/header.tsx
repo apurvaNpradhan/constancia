@@ -6,9 +6,10 @@ import type { note } from "@constancia/server";
 
 interface HeaderProps {
    data: note.NoteSchema;
+   isSaving?: boolean;
 }
 
-export function Header({ data }: HeaderProps) {
+export function Header({ data, isSaving }: HeaderProps) {
    const trpc = useTRPC();
    const mutation = useMutation({ ...trpc.noteRouter.updateNote.mutationOptions() });
    const handleFavorite = async (id: string, isFavorite: boolean) => {
@@ -19,7 +20,7 @@ export function Header({ data }: HeaderProps) {
    };
    return (
       <div className="flex flex-col w-full px-1.5 ">
-         <HeaderNav data={data} handleFavorite={handleFavorite} />
+         <HeaderNav data={data} handleFavorite={handleFavorite} isSaving={isSaving} />
          {/* <HeaderOptions /> */}
       </div>
    );

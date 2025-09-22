@@ -1,4 +1,4 @@
-import NoteEditor from "@/components/common/notes/editor/notes-editor";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Header } from "@/components/layout/headers/note/header";
 import MainLayout from "@/components/layout/main-layout";
 import { Input } from "@/components/ui/input";
@@ -8,34 +8,62 @@ import { useTRPC } from "@/utils/trpc";
 import type { note } from "@constancia/server";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import type { Value } from "platejs";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
+import NoteEditor from "@/components/common/notes/editor/notes-editor";
+
+const ErrorFallback = ({ error }: { error: Error }) => (
+   <MainLayout>
+      <div className="max-w-6xl mx-auto p-14">
+         <p className="text-red-500">Error: {error.message}</p>
+         <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+         >
+            Retry
+         </button>
+      </div>
+   </MainLayout>
+);
 
 export const Route = createFileRoute("/_protected/notes/$id")({
    component: RouteComponent,
-   beforeLoad: async ({ params, context: c }) => {
-      await c.queryClient.ensureQueryData(
-         c.trpc.noteRouter.getNoteById.queryOptions({ id: params.id })
-      );
-   },
+   errorComponent: ErrorFallback,
+   pendingComponent: () => (
+      <MainLayout
+         header={
+            <div className="flex w-full  p-4">
+               <Skeleton className="h-8 justify-start w-[200px]" />
+            </div>
+         }
+      >
+         <div className="max-w-6xl mx-auto flex flex-col p-14">
+            <Skeleton className="h-10 w-3/4 mb-4 rounded-md" />
+            <Skeleton className="h-[400px] w-full rounded-md" />
+         </div>
+      </MainLayout>
+   ),
 });
 
 function RouteComponent() {
    const { id } = Route.useParams();
    const trpc = useTRPC();
-   const { data, isPending } = useSuspenseQuery(trpc.noteRouter.getNoteById.queryOptions({ id }));
-   if (isPending) {
-      return <div>Loading...</div>;
-   }
-
+   const { data } = useSuspenseQuery(trpc.noteRouter.getNoteById.queryOptions({ id }));
    const [error, setError] = useState<string | null>(null);
-   const [title, setTitle] = useState(data.title ?? "");
+   const [title, setTitle] = useState(data?.title ?? "");
+   const [isSaving, setIsSaving] = useState(false);
    const queryClient = getQueryClient();
+
    const mutation = useMutation({
       ...trpc.noteRouter.updateNote.mutationOptions(),
+      onMutate: () => {
+         setIsSaving(true);
+         return undefined;
+      },
       onSettled: (data) => {
+         setIsSaving(false);
          if (data?.id) {
             queryClient.invalidateQueries({
                queryKey: trpc.noteRouter.getNoteById.queryKey({ id: data.id }),
@@ -45,53 +73,68 @@ function RouteComponent() {
                if (!isNaN(entryDate.getTime())) {
                   queryClient.invalidateQueries({
                      queryKey: trpc.journal.getJournalsByMonth.queryKey({
-                        month: entryDate.getMonth() + 1, // Months are 1-12
+                        month: entryDate.getMonth() + 1,
                         year: entryDate.getFullYear(),
                      }),
                   });
                }
             }
-
             queryClient.invalidateQueries({
                queryKey: trpc.noteRouter.getAllNotes.infiniteQueryKey({ limit: 30 }),
             });
          }
       },
-
       onError: (error) => {
          setError("Failed to save note. Please try again.");
+         setIsSaving(false);
       },
    });
+
    const toggleFavorite = async (id: string, isFavorite: boolean) => {
-      window.event?.preventDefault();
-      window.event?.stopPropagation();
+      if (window.event) {
+         window.event.preventDefault();
+         window.event.stopPropagation();
+      }
       await mutation.mutateAsync({
          id,
          isFavorite: !isFavorite,
       });
    };
 
-   const debouncedTitleSave = useDebouncedCallback(async (value: note.NoteUpdateSchema) => {
-      try {
-         await mutation.mutateAsync({
-            id: data.id,
-            title: value.title ?? "",
-         });
-      } catch (err) {
-         setError("Failed to save note. Please try again.");
+   const debouncedTitleSave = useDebouncedCallback(
+      async (value: note.NoteUpdateSchema) => {
+         if (value.title === data.title) return;
+         try {
+            await mutation.mutateAsync({
+               id: data.id,
+               title: value.title ?? "",
+            });
+         } catch (err) {
+            setError("Failed to save note. Please try again.");
+         }
+      },
+      {
+         delay: 1000,
       }
-   }, 1000);
+   );
 
-   const debouncedContentSave = useDebouncedCallback(async (jsonBlocks: Value) => {
-      try {
-         await mutation.mutateAsync({
-            id: data.id,
-            content: jsonBlocks,
-         });
-      } catch (err) {
-         setError("Failed to save note. Please try again.");
+   const debouncedContentSave = useDebouncedCallback(
+      async (jsonBlocks: Value) => {
+         try {
+            await mutation.mutateAsync({
+               id: data.id,
+               content: jsonBlocks,
+            });
+         } catch (err) {
+            setError("Failed to save note. Please try again.");
+         }
+      },
+      {
+         delay: 1000,
+         flushOnUnmount: true,
+         leading: false,
       }
-   }, 1000);
+   );
 
    useEffect(() => {
       if (error) {
@@ -114,37 +157,29 @@ function RouteComponent() {
    const inputProps = {
       placeholder: "Untitled",
       className:
-         "border-none shadow-none outline-none text-2xl md:text-4xl font-semibold px-0 focus-visible:ring-0 overflow-hidden text-ellipsis whitespace-normal p-14 dark:bg-background",
+         "border-none shadow-none outline-none text-2xl md:text-4xl font-semibold focus-visible:ring-0 overflow-hidden text-ellipsis whitespace-normal dark:bg-background my-4 md:py-10 ",
       value: title,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
-      onBlur: (e: React.FocusEvent<HTMLInputElement>) => handleSave(e.target.value),
+      onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
+         if (e.target.value !== data.title) {
+            handleSave(e.target.value);
+         }
+      },
       onKeyDown: handleKeyDown,
    };
 
-   switch (data?.type) {
-      case "note":
-         return (
-            <MainLayout header={<Header data={data} />}>
-               <div className="max-w-6xl mx-auto flex flex-col ">
-                  <Input {...inputProps} />
-                  <NoteEditor data={data} debouncedSave={debouncedContentSave} />
-               </div>
-            </MainLayout>
-         );
-      case "journal":
-         return (
-            <MainLayout header={<Header data={data} />}>
-               <div className="max-w-6xl mx-auto flex flex-col ">
-                  <Input {...inputProps} />
-                  <NoteEditor data={data} debouncedSave={debouncedContentSave} />
-               </div>
-            </MainLayout>
-         );
-      case "workout":
-         return <MainLayout>Hello "/_protected/$id"!{id}</MainLayout>;
-      case "habit":
-         return <MainLayout>Hello "/_protected/$id"!{id}</MainLayout>;
-      default:
-         return <MainLayout>Hello "/_protected/$id"!{id}</MainLayout>;
+   if (!data) {
+      return <ErrorFallback error={new Error("Note not found")} />;
    }
+
+   return (
+      <MainLayout header={<Header data={data} isSaving={isSaving} />}>
+         <div className="max-w-5xl mx-auto flex flex-col">
+            <div className="relative" onClick={(e) => e.stopPropagation()}>
+               <Input {...inputProps} />
+            </div>
+            <NoteEditor data={data} debouncedSave={debouncedContentSave} />
+         </div>
+      </MainLayout>
+   );
 }

@@ -29,6 +29,8 @@ import { FloatingToolbarKit } from "@/components/editor/plugins/floating-toolbar
 import { CalloutKit } from "@/components/editor/plugins/callout-kit";
 import { AutoformatKit } from "@/components/editor/plugins/autoformat-kit";
 import { FixedToolbarKit } from "@/components/editor/plugins/fixed-toolbar-kit";
+import { useIsMobile } from "@/hooks/use-mobile";
+import StickyToc from "@/components/editor/sticky-toc";
 interface NoteEditorProps {
    data: note.NoteSchema;
    debouncedSave: (value: Value) => void;
@@ -53,10 +55,12 @@ const initialValue: Value = [
    },
 ];
 export default function NoteEditor({ data, debouncedSave }: NoteEditorProps) {
+   const toolbarKit = FixedToolbarKit;
    const editor = usePlateEditor({
       value: () => {
          return data.content as Value;
       },
+      autoSelect: "end",
       plugins: [
          ...BasicBlocksKit,
          ...CodeBlockKit,
@@ -83,19 +87,23 @@ export default function NoteEditor({ data, debouncedSave }: NoteEditorProps) {
          ...BlockPlaceholderKit,
          ...FloatingToolbarKit,
          ...ToggleKit,
+         ...toolbarKit,
       ],
    });
 
    return (
-      <Plate
-         editor={editor}
-         onChange={({ value }) => {
-            debouncedSave(value);
-         }}
-      >
-         <EditorContainer>
-            <Editor placeholder="Write something..." variant={"fullWidth"} />
-         </EditorContainer>
-      </Plate>
+      <div className="relative h-screen">
+         <Plate
+            editor={editor}
+            onChange={({ value }) => {
+               debouncedSave(value);
+            }}
+         >
+            <StickyToc />
+            <EditorContainer>
+               <Editor placeholder="Write something..." variant={"fullWidth"} />
+            </EditorContainer>
+         </Plate>
+      </div>
    );
 }

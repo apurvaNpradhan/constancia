@@ -58,7 +58,7 @@ export function HeaderNav({ activeTab, setActiveTab }: HeaderProps) {
                            <TabsTrigger
                               key={tab.value}
                               value={tab.value}
-                              className="text-xs data-[state=active]:bg-primary/20 data-[state=active]:text-primary dark:data-[state=active]:text-primary dark:data-[state=active]:bg-primary/20 data-[state=active]:shadow-none dark:data-[state=active]:border-transparent"
+                              className="text-xs data-[state=active]:bg-secondary data-[state=active]:text-primary dark:data-[state=active]:text-primary dark:data-[state=active]:bg-secondary data-[state=active]:shadow-none dark:data-[state=active]:border-transparent"
                            >
                               {tab.name}
                            </TabsTrigger>
@@ -69,13 +69,8 @@ export function HeaderNav({ activeTab, setActiveTab }: HeaderProps) {
             </Breadcrumb>
          </div>
          <div className="flex items-center gap-2">
-            <Button size={"sm"} variant={"ghost"} onClick={handleCreatePage}>
+            <Button size={"sm"} variant={"secondary"} onClick={handleCreatePage}>
                New Doc
-               <Button
-                  size={"icon"}
-                  variant={"ghost"}
-                  className="h-5 w-4 flex items-center "
-               ></Button>
             </Button>
          </div>
       </div>

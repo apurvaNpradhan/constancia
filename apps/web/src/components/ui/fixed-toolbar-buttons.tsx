@@ -1,22 +1,22 @@
-"use client";
-
-import * as React from "react";
-
 import {
-   ArrowUpToLineIcon,
-   BaselineIcon,
    BoldIcon,
-   Code2Icon,
-   HighlighterIcon,
    ItalicIcon,
-   PaintBucketIcon,
-   StrikethroughIcon,
    UnderlineIcon,
-   WandSparklesIcon,
+   HighlighterIcon,
+   MoreHorizontalIcon,
+   StrikethroughIcon,
+   Code2Icon,
+   BaselineIcon,
+   PaintBucketIcon,
 } from "lucide-react";
 import { KEYS } from "platejs";
 import { useEditorReadOnly } from "platejs/react";
-
+import {
+   DropdownMenu,
+   DropdownMenuContent,
+   DropdownMenuItem,
+   DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { AICommentToolbarButton, AIToolbarButton } from "./ai-toolbar-button";
 import { AlignToolbarButton } from "./align-toolbar-button";
 import { CommentToolbarButton } from "./comment-toolbar-button";
@@ -43,117 +43,92 @@ import { TableToolbarButton } from "./table-toolbar-button";
 import { ToggleToolbarButton } from "./toggle-toolbar-button";
 import { ToolbarGroup } from "./toolbar";
 import { TurnIntoToolbarButton } from "./turn-into-toolbar-button";
+import { Button } from "./button";
 
 export function FixedToolbarButtons() {
    const readOnly = useEditorReadOnly();
 
    return (
-      <div className="flex flex-wrap w-full justify-center">
+      <div className="relative flex w-full justify-center">
          {!readOnly && (
             <>
                <ToolbarGroup>
-                  <UndoToolbarButton />
-                  <RedoToolbarButton />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
-                  <AIToolbarButton tooltip="AI commands">
-                     <WandSparklesIcon />
-                  </AIToolbarButton>
-
-                  <AICommentToolbarButton tooltip="AI comments" />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
-                  <ExportToolbarButton>
-                     <ArrowUpToLineIcon />
-                  </ExportToolbarButton>
-
-                  <ImportToolbarButton />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
                   <InsertToolbarButton />
-                  <TurnIntoToolbarButton />
-                  <FontSizeToolbarButton />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
                   <MarkToolbarButton nodeType={KEYS.bold} tooltip="Bold (⌘+B)">
                      <BoldIcon />
                   </MarkToolbarButton>
-
                   <MarkToolbarButton nodeType={KEYS.italic} tooltip="Italic (⌘+I)">
                      <ItalicIcon />
                   </MarkToolbarButton>
-
                   <MarkToolbarButton nodeType={KEYS.underline} tooltip="Underline (⌘+U)">
                      <UnderlineIcon />
                   </MarkToolbarButton>
-
                   <MarkToolbarButton nodeType={KEYS.strikethrough} tooltip="Strikethrough (⌘+⇧+M)">
                      <StrikethroughIcon />
                   </MarkToolbarButton>
-
-                  <MarkToolbarButton nodeType={KEYS.code} tooltip="Code (⌘+E)">
-                     <Code2Icon />
-                  </MarkToolbarButton>
-
                   <FontColorToolbarButton nodeType={KEYS.color} tooltip="Text color">
                      <BaselineIcon />
                   </FontColorToolbarButton>
-
                   <FontColorToolbarButton
                      nodeType={KEYS.backgroundColor}
                      tooltip="Background color"
                   >
                      <PaintBucketIcon />
                   </FontColorToolbarButton>
+                  {/* <CommentToolbarButton /> */}
                </ToolbarGroup>
 
-               <ToolbarGroup>
-                  <AlignToolbarButton />
-
-                  <NumberedListToolbarButton />
-                  <BulletedListToolbarButton />
-                  <TodoListToolbarButton />
-                  <ToggleToolbarButton />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
-                  <LinkToolbarButton />
-                  <TableToolbarButton />
-                  <EmojiToolbarButton />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
-                  <MediaToolbarButton nodeType={KEYS.img} />
-                  <MediaToolbarButton nodeType={KEYS.video} />
-                  <MediaToolbarButton nodeType={KEYS.audio} />
-                  <MediaToolbarButton nodeType={KEYS.file} />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
-                  <LineHeightToolbarButton />
-                  <OutdentToolbarButton />
-                  <IndentToolbarButton />
-               </ToolbarGroup>
-
-               <ToolbarGroup>
-                  <MoreToolbarButton />
-               </ToolbarGroup>
+               <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                     <Button variant={"ghost"} aria-label="More options" size={"sm"}>
+                        <MoreHorizontalIcon />
+                     </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                     <DropdownMenuItem asChild>
+                        <UndoToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <RedoToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <ExportToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <ImportToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <TurnIntoToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <FontSizeToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild></DropdownMenuItem>
+                     <DropdownMenuItem asChild></DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <AlignToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <EmojiToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <LineHeightToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <OutdentToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <IndentToolbarButton />
+                     </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                        <MoreToolbarButton />
+                     </DropdownMenuItem>
+                  </DropdownMenuContent>
+               </DropdownMenu>
             </>
          )}
 
          <div className="grow" />
-
-         <ToolbarGroup>
-            <MarkToolbarButton nodeType={KEYS.highlight} tooltip="Highlight">
-               <HighlighterIcon />
-            </MarkToolbarButton>
-            <CommentToolbarButton />
-         </ToolbarGroup>
-
          <ToolbarGroup>
             <ModeToolbarButton />
          </ToolbarGroup>

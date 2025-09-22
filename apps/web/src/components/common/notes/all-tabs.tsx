@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format } from "date-fns"; // Changed from formatDistance to format for consistency
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useTRPC } from "@/utils/trpc";
@@ -73,16 +73,12 @@ function AllNotesTab() {
       ...trpc.noteRouter.updateNote.mutationOptions(),
       onSettled: (data) => {
          if (data?.id) {
-            // Invalidate the specific note query
             queryClient.invalidateQueries({
                queryKey: trpc.noteRouter.getNoteById.queryKey({ id: data.id }),
             });
-
-            // Invalidate the infinite query for all notes
             queryClient.invalidateQueries({
                queryKey: trpc.noteRouter.getAllNotes.infiniteQueryKey({ limit: 30 }),
             });
-
             if (data.type === "journal" && data.entryDate) {
                const entryDate = new Date(data.entryDate);
                if (!isNaN(entryDate.getTime())) {
@@ -112,11 +108,27 @@ function AllNotesTab() {
 
    const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
-   if (!data || status === "error") {
+   // Empty state component
+   const EmptyState = () => (
+      <div className="flex flex-col items-center justify-center h-[100px] w-full text-center">
+         <p className="text-muted-foreground text-sm">No notes found.</p>
+         <p className="text-muted-foreground text-xs">Create a new note to get started!</p>
+      </div>
+   );
+
+   if (status === "pending") {
       return <LoadingNotes />;
    }
 
+   if (status === "error" || !data || !data.pages.length) {
+      return <EmptyState />;
+   }
+
    const allNotes = data.pages.flatMap((page) => page.notes);
+   if (allNotes.length === 0) {
+      return <EmptyState />;
+   }
+
    const groupedNotes = groupNoteByDate(allNotes);
 
    const toggleSection = (date: string) => {
@@ -184,13 +196,13 @@ function AllNotesTab() {
             ))}
          {hasNextPage && (
             <div className="mt-4 text-center">
-               <button
+               <Button
                   onClick={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
                   className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
                >
                   {isFetchingNextPage ? "Loading..." : "Load More"}
-               </button>
+               </Button>
             </div>
          )}
       </div>
