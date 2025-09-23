@@ -1,5 +1,5 @@
 import { type LucideIcon } from "lucide-react";
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "./ui/sidebar";
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "../../ui/sidebar";
 import type { IconType } from "react-icons/lib";
 import { Link, useRouter } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";

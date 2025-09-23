@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Header } from "@/components/layout/headers/note/header";
 import MainLayout from "@/components/layout/main-layout";
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
@@ -10,9 +9,25 @@ import { useDebouncedCallback } from "@mantine/hooks";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import type { Value } from "platejs";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import NoteEditor from "@/components/common/notes/editor/notes-editor";
+import StickyToc from "@/components/editor/sticky-toc";
+import {
+   Sheet,
+   SheetClose,
+   SheetContent,
+   SheetDescription,
+   SheetFooter,
+   SheetHeader,
+   SheetTitle,
+   SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { PanelRightIcon } from "lucide-react";
+import { Header } from "@/components/layout/headers/note/header";
+import type { PlateEditor } from "platejs/react";
 
 const ErrorFallback = ({ error }: { error: Error }) => (
    <MainLayout>
@@ -55,6 +70,8 @@ function RouteComponent() {
    const [title, setTitle] = useState(data?.title ?? "");
    const [isSaving, setIsSaving] = useState(false);
    const queryClient = getQueryClient();
+   const [editor, setEditor] = useState<PlateEditor | null>(null);
+   const editorContentRef = useRef<HTMLDivElement>(null);
 
    const mutation = useMutation({
       ...trpc.noteRouter.updateNote.mutationOptions(),
@@ -172,14 +189,21 @@ function RouteComponent() {
       return <ErrorFallback error={new Error("Note not found")} />;
    }
 
+   function TitleInput() {
+      return <Input {...inputProps} />;
+   }
    return (
-      <MainLayout header={<Header data={data} isSaving={isSaving} />}>
-         <div className="max-w-5xl mx-auto flex flex-col">
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
-               <Input {...inputProps} />
-            </div>
-            <NoteEditor data={data} debouncedSave={debouncedContentSave} />
-         </div>
+      <MainLayout header={<Header data={data} isSaving={isSaving} editor={editor} />}>
+         <NoteEditor
+            data={data}
+            debouncedSave={debouncedContentSave}
+            onEditorReady={setEditor}
+            titleInput={
+               <div className="mx-auto max-w-3xl">
+                  <Input {...inputProps} />
+               </div>
+            }
+         />
       </MainLayout>
    );
 }

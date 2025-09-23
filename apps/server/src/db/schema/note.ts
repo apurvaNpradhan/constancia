@@ -24,6 +24,7 @@ import { uuidv7 } from "uuidv7";
 import { user } from "./auth";
 import { relations, sql } from "drizzle-orm";
 import type z from "zod";
+import { space } from "./space";
 
 export const typeEnum = pgEnum("type_enum", ["note", "journal", "workout", "habit"]);
 export const note = pgTable(
@@ -33,6 +34,7 @@ export const note = pgTable(
       userId: uuid("user_id")
          .notNull()
          .references(() => user.id, { onDelete: "cascade" }),
+      spaceId: uuid("space_id").references(() => space.id, { onDelete: "cascade" }),
       title: varchar("title", { length: 255 }),
       content: jsonb("content").$type<Json>(),
       type: typeEnum("type").notNull().default("note"),
@@ -52,7 +54,7 @@ export const note = pgTable(
    (table) => [
       {
          userIdIdx: index("note_user_id_idx").on(table.userId),
-         userDateIdx: unique("unique_user_date").on(table.userId, table.entryDate),
+         spaceIdIdx: index("note_space_id_idx").on(table.spaceId),
          titleIdx: index("note_title_idx").on(table.title),
          createdAtIdx: index("note_created_at_idx").on(table.createdAt),
          parentIdIdx: index("note_parent_id_idx").on(table.parentId),
@@ -120,6 +122,10 @@ export const notesRelations = relations(note, ({ one, many }) => ({
    parent: one(note, {
       fields: [note.parentId],
       references: [note.id],
+   }),
+   space: one(space, {
+      fields: [note.spaceId],
+      references: [space.id],
    }),
    children: many(note),
    outgoingLinks: many(links, { relationName: "outgoing" }),

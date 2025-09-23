@@ -1,8 +1,6 @@
 import type { note } from "@constancia/server";
-import { Plate, usePlateEditor } from "platejs/react";
+import { Plate, usePlateEditor, type PlateEditor } from "platejs/react";
 import { TrailingBlockPlugin, type Value } from "platejs";
-
-//Plate components
 
 import { Editor, EditorContainer } from "@/components/ui/editor";
 import { BasicBlocksKit } from "@/components/editor/plugins/basic-blocks-kit";
@@ -31,9 +29,13 @@ import { AutoformatKit } from "@/components/editor/plugins/autoformat-kit";
 import { FixedToolbarKit } from "@/components/editor/plugins/fixed-toolbar-kit";
 import { useIsMobile } from "@/hooks/use-mobile";
 import StickyToc from "@/components/editor/sticky-toc";
+import { useEffect } from "react";
+import { Input } from "@/components/ui/input";
 interface NoteEditorProps {
    data: note.NoteSchema;
    debouncedSave: (value: Value) => void;
+   onEditorReady?: (editor: PlateEditor) => void;
+   titleInput?: React.ReactNode;
 }
 
 const initialValue: Value = [
@@ -54,7 +56,12 @@ const initialValue: Value = [
       type: "p",
    },
 ];
-export default function NoteEditor({ data, debouncedSave }: NoteEditorProps) {
+export default function NoteEditor({
+   data,
+   debouncedSave,
+   onEditorReady,
+   titleInput,
+}: NoteEditorProps) {
    const toolbarKit = FixedToolbarKit;
    const editor = usePlateEditor({
       value: () => {
@@ -91,19 +98,22 @@ export default function NoteEditor({ data, debouncedSave }: NoteEditorProps) {
       ],
    });
 
+   useEffect(() => {
+      if (editor && onEditorReady) {
+         onEditorReady(editor);
+      }
+   }, [editor, onEditorReady]);
    return (
-      <div className="relative h-screen">
-         <Plate
-            editor={editor}
-            onChange={({ value }) => {
-               debouncedSave(value);
-            }}
-         >
-            <StickyToc />
-            <EditorContainer>
-               <Editor placeholder="Write something..." variant={"fullWidth"} />
-            </EditorContainer>
-         </Plate>
-      </div>
+      <Plate
+         editor={editor}
+         onChange={({ value }) => {
+            debouncedSave(value);
+         }}
+      >
+         <EditorContainer>
+            {titleInput}
+            <Editor placeholder="Write something..." />
+         </EditorContainer>
+      </Plate>
    );
 }

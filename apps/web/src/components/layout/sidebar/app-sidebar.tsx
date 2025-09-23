@@ -1,3 +1,4 @@
+import { LuBox, LuBoxes } from "react-icons/lu";
 import {
    AudioWaveform,
    Blocks,
@@ -7,8 +8,14 @@ import {
    Settings2,
    Trash2,
 } from "lucide-react";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
-import { NavMain } from "@/components/nav-main";
+import {
+   Sidebar,
+   SidebarContent,
+   SidebarFooter,
+   SidebarHeader,
+   SidebarRail,
+} from "@/components/ui/sidebar";
+import { NavMain } from "@/components/layout/sidebar/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { MdHome, MdSettings, MdCalendarToday, MdOutlineSearch } from "react-icons/md";
 import { IoDocumentsOutline } from "react-icons/io5";
@@ -16,6 +23,7 @@ import { FaDumbbell } from "react-icons/fa";
 import { PiPlantFill } from "react-icons/pi";
 import { useSettingsStore } from "@/store/settings";
 import { Button } from "@/components/ui/button";
+import { NavSecondary } from "./nav-secondary";
 
 interface Items {
    title: string;
@@ -30,29 +38,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
    const data = {
       navMain: [
-         { title: "Search", url: "#", icon: MdOutlineSearch },
+         // { title: "Search", url: "#", icon: MdOutlineSearch },
          { title: "Home", url: "/home", icon: MdHome, isActive: true },
-         { title: "All notes", url: "/notes/all", icon: IoDocumentsOutline },
          { title: "Journals", url: "/journals", icon: MdCalendarToday },
          { title: "Workouts", url: "/workouts", icon: FaDumbbell },
          { title: "Habits", url: "/habits", icon: PiPlantFill },
-         {
-            title: "Settings",
-            isActive: isOpen,
-            icon: MdSettings,
-            Action: () => {
-               openModal();
-            },
-         },
+
+         { title: "All Notes", url: "/notes/all", icon: IoDocumentsOutline },
       ],
       navSecondary: [
-         { title: "Calendar", url: "#", icon: Calendar },
-         { title: "Settings", url: "#", icon: Settings2 },
-         { title: "Templates", url: "#", icon: Blocks },
-         { title: "Trash", url: "#", icon: Trash2 },
-         { title: "Help", url: "#", icon: MessageCircleQuestion },
+         {
+            title: "Spaces",
+            url: "/spaces",
+            icon: LuBoxes,
+            isActive: true,
+            items: [
+               {
+                  title: "Coding",
+                  url: "#",
+               },
+            ],
+         },
       ],
    };
+   const footerData = [
+      {
+         title: "Settings",
+         isActive: isOpen,
+         icon: MdSettings,
+         Action: () => {
+            openModal();
+         },
+      },
+   ];
 
    return (
       <Sidebar variant="sidebar" collapsible="icon" className="border-r-0" {...props}>
@@ -60,6 +78,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <NavUser />
             <NavMain items={data.navMain} />
          </SidebarHeader>
+         <SidebarContent>
+            <NavSecondary items={data.navSecondary} />
+            <SidebarFooter>
+               <NavMain items={footerData} />
+            </SidebarFooter>
+         </SidebarContent>
          <SidebarContent />
          <SidebarRail />
       </Sidebar>
